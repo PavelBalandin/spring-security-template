@@ -32,7 +32,6 @@ public class RoleServiceImpl implements RoleService {
        return roleRepository.findAll().stream().map(roleMapper::toDTO).collect(Collectors.toSet());
     }
 
-
     @Override
     public RoleDTO create(RoleDTO roleDTO) {
         Optional<Role> optional = roleRepository.findByName(roleDTO.getName());

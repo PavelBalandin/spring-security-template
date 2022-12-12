@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.ALREADY_REPORTED)
 public class ResourcesAlreadyExistsException extends RuntimeException {
+
     public ResourcesAlreadyExistsException() {
         super();
     }

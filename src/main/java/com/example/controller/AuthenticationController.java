@@ -7,6 +7,7 @@ import com.example.security.JWTUtils;
 import com.example.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -36,19 +36,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<Map<String, Object>> auth(@RequestBody AuthenticationRequest request) {
-      authenticationManager.authenticate(
-              new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-      );
-    //TODO
-      UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-      Map<String, Object> response = new HashMap<>();
-      if(userDetails != null){
-          String token = jwtUtils.generateToken(userDetails);
-          response.put("token", token);
-      }else {
-          response.put("message", "Some error gone wrong");
-      }
+    public ResponseEntity<Map<String, String>> auth(@RequestBody AuthenticationRequest request) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        String accessToken = jwtUtils.generateToken(userDetails);
+        String refreshToken = jwtUtils.generateRefreshToken(userDetails);
+
+        Map<String, String> response = Map.of("accessToken", accessToken, "refreshToken", refreshToken);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
